@@ -94,8 +94,29 @@ namespace FullStackAuth_WebAPI.Controllers
 
         // DELETE api/<CategoryController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            try
+            {
+                var userId = User.FindFirstValue("id");
+                var Category = _context.Categories.Find(id);
+                if(Category == null)
+                {
+                    return NotFound();
+                }
+
+                if(userId == Category.UserId)
+                {
+                    _context.Categories.Remove(Category);
+                    _context.SaveChanges();
+                    return Ok();
+                }
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
