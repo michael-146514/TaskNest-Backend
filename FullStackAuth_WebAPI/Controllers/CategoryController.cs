@@ -1,4 +1,5 @@
 ﻿using FullStackAuth_WebAPI.Data;
+using FullStackAuth_WebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -37,17 +38,29 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        // GET api/<CategoryController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
         // POST api/<CategoryController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult CreateCategory([FromBody] Category data)
         {
+            try
+            {
+                string userId = User.FindFirstValue("id");
+
+                var newCategory = new Category
+                {
+                    Name = data.Name,
+                    UserId = userId,
+                };
+
+                _context.Categories.Add(newCategory);
+                _context.SaveChanges();
+
+                return Ok(newCategory);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message); 
+            }
         }
 
         // PUT api/<CategoryController>/5
