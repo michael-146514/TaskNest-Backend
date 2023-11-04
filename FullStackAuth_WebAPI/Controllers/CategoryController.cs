@@ -65,8 +65,31 @@ namespace FullStackAuth_WebAPI.Controllers
 
         // PUT api/<CategoryController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] Category data)
         {
+            try
+            {
+                var userId = User.FindFirstValue("id");
+                var existingCategory = _context.Categories.Find(id);
+
+                if(existingCategory == null)
+                {
+                    return NotFound();
+                }
+
+                if(userId == existingCategory.UserId) //Checks if the User owns this Category
+                {
+                    existingCategory.Name = data.Name;
+                    _context.SaveChanges();
+                    return Ok();
+                }
+                return Unauthorized(); 
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         // DELETE api/<CategoryController>/5
