@@ -92,25 +92,31 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        // DELETE api/<CategoryController>/5
+        // DELETE api/category/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             try
             {
                 var userId = User.FindFirstValue("id");
-                var Category = _context.Categories.Find(id);
-                if(Category == null)
+                var category = _context.Categories.Find(id);
+
+                if (category == null)
                 {
                     return NotFound();
                 }
 
-                if(userId == Category.UserId)
+                if (userId == category.UserId)
                 {
-                    _context.Categories.Remove(Category);
+                    var tasksToDelete = _context.Tasks.Where(t => t.CategoryId == id).ToList();
+                    
+                    _context.Tasks.RemoveRange(tasksToDelete);
+                    _context.Categories.Remove(category);
+
                     _context.SaveChanges();
                     return Ok();
                 }
+
                 return Unauthorized();
             }
             catch (Exception ex)
@@ -118,5 +124,6 @@ namespace FullStackAuth_WebAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
     }
 }
