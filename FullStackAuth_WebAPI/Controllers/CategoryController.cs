@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace FullStackAuth_WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/category")]
     [ApiController]
     [Authorize]
     public class CategoryController : ControllerBase
