@@ -21,13 +21,17 @@ namespace FullStackAuth_WebAPI.Controllers
         }
 
         // GET: api/task
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
         {
             try
             {
                 string userId = User.FindFirstValue("id");
-                var tasks = _context.Tasks.Where(t => t.UserId == userId).ToList();
+                var tasks = _context.Tasks
+                  .Where(t => t.UserId == userId && t.CategoryId == id)
+                  .OrderBy(t => t.Position)
+                  .ToList();
+
                 return Ok(tasks);
             }
             catch (Exception ex)
@@ -60,6 +64,7 @@ namespace FullStackAuth_WebAPI.Controllers
                     Priority = data.Priority,
                     UserId = userId,
                     CategoryId = data.CategoryId,
+                    Position = data.Position,
                 };
 
                 _context.Tasks.Add(newTask);
@@ -94,6 +99,7 @@ namespace FullStackAuth_WebAPI.Controllers
                     existingTask.DueDate = data.DueDate;
                     existingTask.Priority = data.Priority;
                     existingTask.CategoryId = data.CategoryId;
+                    existingTask.Position = existingTask.Position;
 
                     _context.SaveChanges();
                     return Ok();
@@ -105,6 +111,38 @@ namespace FullStackAuth_WebAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        // PUT api/task/5
+        // PUT api/task/position/5
+        [HttpPut("position/{id}")]
+        public IActionResult UpdatePosition(int id, [FromBody] Tasks data)
+        {
+            try
+            {
+                var userId = User.FindFirstValue("id");
+                var existingTask = _context.Tasks.Find(id);
+
+                if (existingTask == null)
+                {
+                    return NotFound();
+                }
+
+                if (userId == existingTask.UserId)
+                {
+                    existingTask.Position = data.Position;
+                    existingTask.CategoryId = data.CategoryId;
+
+                    _context.SaveChanges();
+                    return Ok();
+                }
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
 
         // DELETE api/task/5
         [HttpDelete("{id}")]

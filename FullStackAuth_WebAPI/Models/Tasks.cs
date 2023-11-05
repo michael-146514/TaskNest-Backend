@@ -2,7 +2,7 @@
 
 namespace FullStackAuth_WebAPI.Models
 {
-    public class Task
+    public class Tasks
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -10,6 +10,7 @@ namespace FullStackAuth_WebAPI.Models
         public DateTime DueDate { get; set; }
         public bool IsCompleted { get; set; }
         public int Priority { get; set; }
+        public int Position { get; set; }
 
         [ForeignKey("User")]
         public string UserId { get; set; }
