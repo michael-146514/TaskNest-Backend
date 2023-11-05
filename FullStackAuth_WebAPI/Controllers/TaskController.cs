@@ -115,7 +115,7 @@ namespace FullStackAuth_WebAPI.Controllers
         // PUT api/task/5
         // PUT api/task/position/5
         [HttpPut("position/{id}")]
-        public IActionResult UpdatePosition(int id, [FromBody] Tasks data)
+        public IActionResult UpdatePositionAndCategory(int id, [FromBody] Tasks data)
         {
             try
             {
