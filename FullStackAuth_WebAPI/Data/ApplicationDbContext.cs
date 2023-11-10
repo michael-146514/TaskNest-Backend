@@ -11,6 +11,7 @@ namespace FullStackAuth_WebAPI.Data
         public DbSet<Category> Categories { get; set; }
 
         public DbSet<CalendarTasks> CalendarTasks { get; set; }
+        public DbSet<Board> Boards { get; set; }
 
         public DbSet<Tasks> Tasks { get; set; }
 

@@ -11,6 +11,7 @@ namespace FullStackAuth_WebAPI.Models
         public bool IsCompleted { get; set; }
         public int Priority { get; set; }
         public int Position { get; set; }
+        public string Color { get; set; }
 
         [ForeignKey("User")]
         public string UserId { get; set; }

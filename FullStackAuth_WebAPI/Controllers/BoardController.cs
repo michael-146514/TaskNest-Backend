@@ -8,29 +8,29 @@ using System.Security.Claims;
 
 namespace FullStackAuth_WebAPI.Controllers
 {
-    [Route("api/category")]
+    [Route("api/board")]
     [ApiController]
     [Authorize]
-    public class CategoryController : ControllerBase
+    public class BoardController : ControllerBase
     {
-
         private readonly ApplicationDbContext _context;
 
-        public CategoryController(ApplicationDbContext context)
+        public BoardController(ApplicationDbContext context)
         {
             _context = context;
         }
-        // GET: api/<CategoryController>
+
+        // GET: api/board
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetUserBoards()
         {
-
-
             try
             {
-                string userId = User.FindFirstValue("id");
-                var categories = _context.Categories.Where(c => c.UserId == userId).ToList();
-                return Ok(categories);
+                var userId = User.FindFirstValue("id");
+                var userBoards = _context.Boards
+                    .Where(b => b.UserId == userId)
+                    .ToList();
+                return Ok(userBoards);
             }
             catch (Exception ex)
             {
@@ -38,54 +38,23 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        // POST api/<CategoryController>
+        // POST api/board
         [HttpPost]
-        public IActionResult CreateCategory([FromBody] Category data)
+        public IActionResult AddBoard([FromBody] Board data)
         {
             try
             {
-                string userId = User.FindFirstValue("id");
-
-                var newCategory = new Category
+                var userId = User.FindFirstValue("id");
+                var newBoard = new Board
                 {
                     Name = data.Name,
                     UserId = userId,
-                    BoardId = data.BoardId,
                 };
 
-                _context.Categories.Add(newCategory);
+                _context.Boards.Add(newBoard);
                 _context.SaveChanges();
 
-                return Ok(newCategory);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message); 
-            }
-        }
-
-        // PUT api/<CategoryController>/5
-        [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Category data)
-        {
-            try
-            {
-                var userId = User.FindFirstValue("id");
-                var existingCategory = _context.Categories.Find(id);
-
-                if(existingCategory == null)
-                {
-                    return NotFound();
-                }
-
-                if(userId == existingCategory.UserId) //Checks if the User owns this Category
-                {
-                    existingCategory.Name = data.Name;
-                    _context.SaveChanges();
-                    return Ok();
-                }
-                return Unauthorized(); 
-
+                return Ok(newBoard);
             }
             catch (Exception ex)
             {
@@ -93,31 +62,26 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        // DELETE api/category/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        // PUT api/board/5
+        [HttpPut("{id}")]
+        public IActionResult EditBoard(int id, [FromBody] Board data)
         {
             try
             {
                 var userId = User.FindFirstValue("id");
-                var category = _context.Categories.Find(id);
+                var existingBoard = _context.Boards.Find(id);
 
-                if (category == null)
+                if (existingBoard == null)
                 {
                     return NotFound();
                 }
 
-                if (userId == category.UserId)
+                if (userId == existingBoard.UserId)
                 {
-                    var tasksToDelete = _context.Tasks.Where(t => t.CategoryId == id).ToList();
-                    
-                    _context.Tasks.RemoveRange(tasksToDelete);
-                    _context.Categories.Remove(category);
-
+                    existingBoard.Name = data.Name;
                     _context.SaveChanges();
                     return Ok();
                 }
-
                 return Unauthorized();
             }
             catch (Exception ex)
@@ -126,5 +90,31 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
+        // DELETE api/board/5
+        [HttpDelete("{id}")]
+        public IActionResult DeleteBoard(int id)
+        {
+            try
+            {
+                var userId = User.FindFirstValue("id");
+                var board = _context.Boards.Find(id);
+                if (board == null)
+                {
+                    return NotFound();
+                }
+
+                if (userId == board.UserId)
+                {
+                    _context.Boards.Remove(board);
+                    _context.SaveChanges();
+                    return Ok();
+                }
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }

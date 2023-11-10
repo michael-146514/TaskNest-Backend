@@ -64,6 +64,7 @@ namespace FullStackAuth_WebAPI.Controllers
                     Priority = data.Priority,
                     UserId = userId,
                     CategoryId = data.CategoryId,
+                    Color = data.Color,
                     Position = data.Position,
                 };
 
@@ -99,6 +100,7 @@ namespace FullStackAuth_WebAPI.Controllers
                     existingTask.DueDate = data.DueDate;
                     existingTask.Priority = data.Priority;
                     existingTask.CategoryId = data.CategoryId;
+                    existingTask.Color = data.Color;
                     existingTask.Position = existingTask.Position;
 
                     _context.SaveChanges();
